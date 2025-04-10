@@ -33,6 +33,7 @@ export const installHelmChartSchema = {
       values: {
         type: "object",
         description: "Chart values",
+        properties: {},
         additionalProperties: true,
       },
     },
@@ -65,6 +66,7 @@ export const upgradeHelmChartSchema = {
       values: {
         type: "object",
         description: "Chart values",
+        properties: {},
         additionalProperties: true,
       },
     },

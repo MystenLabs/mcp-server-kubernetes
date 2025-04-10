@@ -116,6 +116,72 @@ describe("helm operations", () => {
     }
   });
 
+  test("helm chart values validation", async () => {
+    // Try installing a chart with complex nested values
+    const installResult = await client.request(
+      {
+        method: "tools/call",
+        params: {
+          name: "install_helm_chart",
+          arguments: {
+            name: testReleaseName,
+            chart: "bitnami/nginx",
+            repo: "https://charts.bitnami.com/bitnami",
+            namespace: testNamespace,
+            values: {
+              replicaCount: 1,
+              service: {
+                type: "ClusterIP",
+                port: 80,
+                annotations: {
+                  "test.annotation": "value"
+                }
+              },
+              resources: {
+                limits: {
+                  cpu: "100m",
+                  memory: "128Mi"
+                },
+                requests: {
+                  cpu: "50m",
+                  memory: "64Mi"
+                }
+              },
+              metrics: {
+                enabled: true,
+                service: {
+                  annotations: {
+                    "prometheus.io/scrape": "true"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      HelmResponseSchema
+    );
+
+    expect(installResult.content[0].type).toBe("text");
+    const response = JSON.parse(installResult.content[0].text);
+    expect(response.status).toBe("installed");
+
+    // Clean up after test
+    await client.request(
+      {
+        method: "tools/call",
+        params: {
+          name: "uninstall_helm_chart",
+          arguments: {
+            name: testReleaseName,
+            namespace: testNamespace
+          }
+        }
+      },
+      HelmResponseSchema
+    );
+  }, 60000);
+
   test("helm chart lifecycle", async () => {
     // Create namespace if it doesn't exist
     try {
