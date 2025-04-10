@@ -134,30 +134,30 @@ describe("helm operations", () => {
                 type: "ClusterIP",
                 port: 80,
                 annotations: {
-                  "test.annotation": "value"
-                }
+                  "test.annotation": "value",
+                },
               },
               resources: {
                 limits: {
                   cpu: "100m",
-                  memory: "128Mi"
+                  memory: "128Mi",
                 },
                 requests: {
                   cpu: "50m",
-                  memory: "64Mi"
-                }
+                  memory: "64Mi",
+                },
               },
               metrics: {
                 enabled: true,
                 service: {
                   annotations: {
-                    "prometheus.io/scrape": "true"
-                  }
-                }
-              }
-            }
-          }
-        }
+                    "prometheus.io/scrape": "true",
+                  },
+                },
+              },
+            },
+          },
+        },
       },
       HelmResponseSchema
     );
@@ -174,9 +174,9 @@ describe("helm operations", () => {
           name: "uninstall_helm_chart",
           arguments: {
             name: testReleaseName,
-            namespace: testNamespace
-          }
-        }
+            namespace: testNamespace,
+          },
+        },
       },
       HelmResponseSchema
     );
