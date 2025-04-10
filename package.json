@@ -24,7 +24,8 @@
     "dockerbuild": "docker buildx build -t flux159/mcp-server-kubernetes --platform linux/amd64,linux/arm64 --push .",
     "chat": "npx mcp-chat --server \"./dist/index.js\"",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
-    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\""
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "check": "bun run format:check && bun run test && bun run build"
   },
   "keywords": [
     "mcp",
