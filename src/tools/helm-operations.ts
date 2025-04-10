@@ -1,7 +1,12 @@
 import { execSync } from "child_process";
 import { writeFileSync, unlinkSync } from "fs";
 import yaml from "yaml";
-import { HelmInstallOperation, HelmOperation, HelmResponse, HelmUpgradeOperation } from "../models/helm-models.js";
+import {
+  HelmInstallOperation,
+  HelmOperation,
+  HelmResponse,
+  HelmUpgradeOperation,
+} from "../models/helm-models.js";
 
 export const installHelmChartSchema = {
   name: "install_helm_chart",
@@ -100,7 +105,9 @@ const writeValuesFile = (name: string, values: Record<string, any>): string => {
   return filename;
 };
 
-export async function installHelmChart(params: HelmInstallOperation): Promise<{ content: { type: string; text: string }[] }> {
+export async function installHelmChart(
+  params: HelmInstallOperation
+): Promise<{ content: { type: string; text: string }[] }> {
   try {
     // Add helm repository if provided
     if (params.repo) {
@@ -115,7 +122,7 @@ export async function installHelmChart(params: HelmInstallOperation): Promise<{ 
     if (params.values) {
       const valuesFile = writeValuesFile(params.name, params.values);
       command += ` -f ${valuesFile}`;
-      
+
       try {
         executeHelmCommand(command);
       } finally {
@@ -144,7 +151,9 @@ export async function installHelmChart(params: HelmInstallOperation): Promise<{ 
   }
 }
 
-export async function upgradeHelmChart(params: HelmUpgradeOperation): Promise<{ content: { type: string; text: string }[] }> {
+export async function upgradeHelmChart(
+  params: HelmUpgradeOperation
+): Promise<{ content: { type: string; text: string }[] }> {
   try {
     // Add helm repository if provided
     if (params.repo) {
@@ -159,7 +168,7 @@ export async function upgradeHelmChart(params: HelmUpgradeOperation): Promise<{ 
     if (params.values) {
       const valuesFile = writeValuesFile(params.name, params.values);
       command += ` -f ${valuesFile}`;
-      
+
       try {
         executeHelmCommand(command);
       } finally {
@@ -188,7 +197,9 @@ export async function upgradeHelmChart(params: HelmUpgradeOperation): Promise<{ 
   }
 }
 
-export async function uninstallHelmChart(params: HelmOperation): Promise<{ content: { type: string; text: string }[] }> {
+export async function uninstallHelmChart(
+  params: HelmOperation
+): Promise<{ content: { type: string; text: string }[] }> {
   try {
     executeHelmCommand(`helm uninstall ${params.name} --namespace ${params.namespace}`);
 

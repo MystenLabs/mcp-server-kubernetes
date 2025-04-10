@@ -9,10 +9,7 @@ async function sleep(ms: number): Promise<void> {
 }
 
 // Helper function to wait for cluster readiness
-async function waitForClusterReadiness(
-  client: Client,
-  namespace: string
-): Promise<void> {
+async function waitForClusterReadiness(client: Client, namespace: string): Promise<void> {
   let attempts = 0;
   const maxAttempts = 15;
   const waitTime = 3000;
@@ -178,13 +175,9 @@ describe("helm operations", () => {
       HelmResponseSchema
     );
 
-    const initialDeploymentsCheck = JSON.parse(
-      initialCheckResult.content[0].text
-    );
+    const initialDeploymentsCheck = JSON.parse(initialCheckResult.content[0].text);
     expect(
-      initialDeploymentsCheck.deployments.every(
-        (d: any) => !d.name.startsWith(testReleaseName)
-      )
+      initialDeploymentsCheck.deployments.every((d: any) => !d.name.startsWith(testReleaseName))
     ).toBe(true);
 
     // Step 1: Install the chart
@@ -240,9 +233,7 @@ describe("helm operations", () => {
       HelmResponseSchema
     );
 
-    const initialDeploymentsAfterInstall = JSON.parse(
-      initialDeploymentResult.content[0].text
-    );
+    const initialDeploymentsAfterInstall = JSON.parse(initialDeploymentResult.content[0].text);
     expect(
       initialDeploymentsAfterInstall.deployments.some((d: any) =>
         d.name.startsWith(testReleaseName)
@@ -343,9 +334,7 @@ describe("helm operations", () => {
 
     const finalDeployments = JSON.parse(finalDeploymentResult.content[0].text);
     expect(
-      finalDeployments.deployments.every(
-        (d: any) => !d.name.startsWith(testReleaseName)
-      )
+      finalDeployments.deployments.every((d: any) => !d.name.startsWith(testReleaseName))
     ).toBe(true);
   }, 120000); // Increase timeout to 120s for the entire lifecycle test
 });
