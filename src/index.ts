@@ -60,6 +60,14 @@ import { scaleDeployment, scaleDeploymentSchema } from "./tools/scale_deployment
 import { describeDeployment, describeDeploymentSchema } from "./tools/describe_deployment.js";
 import { createConfigMap, CreateConfigMapSchema } from "./tools/create_configmap.js";
 
+// New context tool imports
+import { listKubeContexts, listKubeContextsSchema } from "./tools/list_kube_contexts.js";
+import {
+  getCurrentKubeContext,
+  getCurrentKubeContextSchema,
+} from "./tools/get_current_kube_context.js";
+import { switchKubeContext, switchKubeContextSchema } from "./tools/switch_kube_context.js";
+
 const k8sManager = new KubernetesManager();
 
 const server = new Server(
@@ -105,6 +113,9 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
       scaleDeploymentSchema,
       DeleteCronJobSchema,
       CreateConfigMapSchema,
+      listKubeContextsSchema,
+      getCurrentKubeContextSchema,
+      switchKubeContextSchema,
     ],
   };
 });
@@ -440,6 +451,23 @@ server.setRequestHandler(
               name: string;
               namespace: string;
               data: Record<string, string>;
+            }
+          );
+        }
+
+        case "list_kube_contexts": {
+          return await listKubeContexts(k8sManager, {});
+        }
+
+        case "get_current_kube_context": {
+          return await getCurrentKubeContext(k8sManager, {});
+        }
+
+        case "switch_kube_context": {
+          return await switchKubeContext(
+            k8sManager,
+            input as {
+              contextName: string;
             }
           );
         }

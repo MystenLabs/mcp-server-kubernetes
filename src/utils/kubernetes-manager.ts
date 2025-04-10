@@ -1,21 +1,27 @@
 import * as k8s from "@kubernetes/client-node";
 import { ResourceTracker, PortForwardTracker, WatchTracker } from "../types.js";
+import { McpError, ErrorCode } from "@modelcontextprotocol/sdk/types.js";
 
 export class KubernetesManager {
   private resources: ResourceTracker[] = [];
   private portForwards: PortForwardTracker[] = [];
   private watches: WatchTracker[] = [];
   private kc: k8s.KubeConfig;
-  private k8sApi: k8s.CoreV1Api;
-  private k8sAppsApi: k8s.AppsV1Api;
-  private k8sBatchApi: k8s.BatchV1Api;
+  private k8sApi!: k8s.CoreV1Api;
+  private k8sAppsApi!: k8s.AppsV1Api;
+  private k8sBatchApi!: k8s.BatchV1Api;
 
   constructor() {
     this.kc = new k8s.KubeConfig();
     this.kc.loadFromDefault();
+    this._initializeApiClients();
+  }
+
+  private _initializeApiClients(): void {
     this.k8sApi = this.kc.makeApiClient(k8s.CoreV1Api);
     this.k8sAppsApi = this.kc.makeApiClient(k8s.AppsV1Api);
     this.k8sBatchApi = this.kc.makeApiClient(k8s.BatchV1Api);
+    console.log(`KubernetesManager initialized with context: ${this.getCurrentContext()}`);
   }
 
   async cleanup() {
@@ -88,5 +94,29 @@ export class KubernetesManager {
 
   getBatchApi() {
     return this.k8sBatchApi;
+  }
+
+  listContexts(): string[] {
+    return this.kc.getContexts().map((c) => c.name);
+  }
+
+  getCurrentContext(): string {
+    return this.kc.getCurrentContext();
+  }
+
+  switchContext(contextName: string): string {
+    const availableContexts = this.listContexts();
+    if (!availableContexts.includes(contextName)) {
+      throw new McpError(
+        ErrorCode.InvalidRequest,
+        `Context '${contextName}' not found. Available contexts: ${availableContexts.join(", ")}`
+      );
+    }
+    console.log(`Switching Kubernetes context to: ${contextName}`);
+    this.kc.setCurrentContext(contextName);
+    this._initializeApiClients();
+    const newContext = this.getCurrentContext();
+    console.log(`Successfully switched Kubernetes context to: ${newContext}`);
+    return newContext;
   }
 }
